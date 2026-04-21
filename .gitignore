@@ -1,0 +1,33 @@
+# Bazel workspace symlinks / output trees
+bazel-*
+.bazeliskrc
+.bazelrc.user
+
+# Common C/C++ build outputs
+*.o
+*.obj
+*.a
+*.so
+*.dll
+*.dylib
+*.exe
+*.out
+
+# Debugger / profiler junk
+*.dSYM/
+core
+vgcore.*
+
+# Editor / LSP
+.vscode/
+.idea/
+.helix/
+.cache/
+compile_commands.json
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# AI Stuff
+AGENTS.md
