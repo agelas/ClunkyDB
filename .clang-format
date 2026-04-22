@@ -8,6 +8,10 @@ BreakBeforeBraces: Allman
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Always
+AllowShortFunctionsOnASingleLine: All
+AllowShortLambdasOnASingleLine: All
+AllowShortEnumsOnASiingleLine: true
 
 PointerAlignment: Left
 ReferenceAlignment: Left
