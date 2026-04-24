@@ -21,7 +21,6 @@ cc_library(
     hdrs = [
         "serialization/serializer.h",
         "serialization/primitives.h",
-        "serialization/allocation.h",
     ],
     deps = [
         ":schema",
@@ -38,6 +37,21 @@ cc_test(
     name = "schema_test",
     srcs = ["schema/schema_test.cpp"],
     deps = [":schema"],
+    copts = [
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+    ],
+)
+
+cc_test(
+    name = "serialization_test",
+    srcs = ["serialization/serialization_test.cpp"],
+    deps = [
+        ":schema",
+        ":serialization",
+    ],
     copts = [
         "-std=c++20",
         "-Wall",
