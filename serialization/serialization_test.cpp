@@ -31,5 +31,20 @@ int main() {
     assert(bytes.size() == sizeof(double));
   }
 
+   {
+      const std::int64_t value = 42;
+      std::vector<std::byte> bytes;
+
+      serialization::Serializer<std::int64_t>::serialize(value, bytes);
+
+      std::size_t offset = 0;
+      const std::int64_t decoded =
+          serialization::Serializer<std::int64_t>::deserialize(bytes, offset);
+
+      assert(decoded == value);
+      assert(offset == sizeof(std::int64_t));
+      assert(bytes.size() == sizeof(std::int64_t));
+    }
+
   return 0;
 }
