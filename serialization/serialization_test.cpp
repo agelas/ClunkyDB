@@ -59,8 +59,8 @@ int main() {
         serialization::Serializer<std::string>::deserialize(bytes, offset);
 
     assert(decoded == value);
-    assert(offset == sizeof(std::string));
-    assert(bytes.size() == sizeof(std::string));
+    assert(offset == sizeof(std::uint64_t) + value.size());
+    assert(bytes.size() == sizeof(std::uint64_t) + value.size());
   }
 
   return 0;
