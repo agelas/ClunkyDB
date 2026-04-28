@@ -8,12 +8,14 @@
 #include "budget/types.h"
 #include "primitives.h"
 #include "serializer.h"
+#include "string.h"
 
 namespace budget = clunkydb::budget;
 namespace serialization = clunkydb::serialization;
 
 static_assert(serialization::Serializable<double>);
 static_assert(serialization::Serializable<std::int64_t>);
+static_assert(serialization::Serializable<std::string>);
 
 int main() {
   {
@@ -44,6 +46,21 @@ int main() {
     assert(decoded == value);
     assert(offset == sizeof(std::int64_t));
     assert(bytes.size() == sizeof(std::int64_t));
+  }
+
+  {
+    const std::string value = "hello";
+    std::vector<std::byte> bytes;
+
+    serialization::Serializer<std::string>::serialize(value, bytes);
+
+    std::size_t offset = 0;
+    const std::string decoded =
+        serialization::Serializer<std::string>::deserialize(bytes, offset);
+
+    assert(decoded == value);
+    assert(offset == sizeof(std::string));
+    assert(bytes.size() == sizeof(std::string));
   }
 
   return 0;
