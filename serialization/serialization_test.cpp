@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "budget/types.h"
+#include "primitives.h"
 #include "serializer.h"
 
 namespace budget = clunkydb::budget;
