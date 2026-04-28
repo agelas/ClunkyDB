@@ -1,9 +1,7 @@
 #ifndef CLUNKYDB_SERIALIZATION_PRIMITIVES_H_
 #define CLUNKYDB_SERIALIZATION_PRIMITIVES_H_
 
-#include <concepts>
 #include <cstddef>
-#include <cstdint>
 #include <cstring>
 #include <span>
 #include <stdexcept>
