@@ -22,6 +22,7 @@ cc_library(
         "serialization/serializer.h",
         "serialization/primitives.h",
         "serialization/string.h",
+        "serialization/containers.h",
     ],
     deps = [
         ":schema",
