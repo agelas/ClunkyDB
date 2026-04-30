@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "budget/types.h"
+#include "containers.h"
 #include "primitives.h"
 #include "serializer.h"
 #include "string.h"
@@ -61,6 +62,25 @@ int main() {
     assert(decoded == value);
     assert(offset == sizeof(std::uint64_t) + value.size());
     assert(bytes.size() == sizeof(std::uint64_t) + value.size());
+  }
+
+  {
+    const std::vector<std::int64_t> value = {1, 2, 3, 4, 5};
+    std::vector<std::byte> bytes;
+
+    serialization::Serializer<std::vector<std::int64_t>>::serialize(value,
+                                                                    bytes);
+
+    std::size_t offset = 0;
+    const std::vector<std::int64_t> decoded =
+        serialization::Serializer<std::vector<std::int64_t>>::deserialize(
+            bytes, offset);
+
+    assert(decoded == value);
+    assert(offset ==
+           sizeof(std::size_t) + (value.size() * sizeof(std::int64_t)));
+    assert(bytes.size() ==
+           sizeof(std::size_t) + (value.size() * sizeof(std::int64_t)));
   }
 
   return 0;
