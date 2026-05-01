@@ -83,5 +83,22 @@ int main() {
            sizeof(std::size_t) + (value.size() * sizeof(std::int64_t)));
   }
 
+  {
+    const std::vector<double> value = {1, 2, 3, 4, 5};
+    std::vector<std::byte> bytes;
+
+    serialization::Serializer<std::vector<double>>::serialize(value, bytes);
+
+    std::size_t offset = 0;
+    const std::vector<double> decoded =
+        serialization::Serializer<std::vector<double>>::deserialize(bytes,
+                                                                    offset);
+
+    assert(decoded == value);
+    assert(offset == sizeof(std::size_t) + (value.size() * sizeof(double)));
+    assert(bytes.size() ==
+           sizeof(std::size_t) + (value.size() * sizeof(double)));
+  }
+
   return 0;
 }
