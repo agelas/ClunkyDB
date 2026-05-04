@@ -84,7 +84,7 @@ int main() {
   }
 
   {
-    const std::vector<double> value = {1, 2, 3, 4, 5};
+    const std::vector<double> value = {1.1, 2.2, 3.3, 4.45, 5.678};
     std::vector<std::byte> bytes;
 
     serialization::Serializer<std::vector<double>>::serialize(value, bytes);
@@ -98,6 +98,29 @@ int main() {
     assert(offset == sizeof(std::size_t) + (value.size() * sizeof(double)));
     assert(bytes.size() ==
            sizeof(std::size_t) + (value.size() * sizeof(double)));
+  }
+
+  {
+    const std::vector<std::string> value = {"hello", "world", "string", "test",
+                                            "123"};
+    std::vector<std::byte> bytes;
+
+    serialization::Serializer<std::vector<std::string>>::serialize(value,
+                                                                   bytes);
+
+    std::size_t offset = 0;
+    const std::vector<std::string> decoded =
+        serialization::Serializer<std::vector<std::string>>::deserialize(
+            bytes, offset);
+    assert(decoded == value);
+    // Calculate expected size: (3 bytes for size) + (5 + 5 + 6 + 4 +3) + (5*8)
+    // bytes for string sizes
+    std::size_t expected_size = sizeof(std::size_t);
+    for (const auto &str : value) {
+      expected_size += sizeof(std::uint64_t) + str.size();
+    }
+    assert(offset == expected_size);
+    assert(bytes.size() == expected_size);
   }
 
   return 0;
