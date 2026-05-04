@@ -17,6 +17,9 @@ namespace serialization = clunkydb::serialization;
 static_assert(serialization::Serializable<double>);
 static_assert(serialization::Serializable<std::int64_t>);
 static_assert(serialization::Serializable<std::string>);
+static_assert(serialization::Serializable<std::vector<std::int64_t>>);
+static_assert(serialization::Serializable<std::vector<double>>);
+static_assert(serialization::Serializable<std::vector<std::string>>);
 
 int main() {
   {
