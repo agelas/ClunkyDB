@@ -31,5 +31,27 @@ int main() {
     assert(bytes.size() == 3 * sizeof(double));
     assert(offset == 3 * sizeof(double));
   }
+
+  {
+    // Verify field order explicitly
+    const budget::Allocation value{0.5, 0.3, 0.2};
+    std::vector<std::byte> bytes;
+
+    serialization::Serializer<budget::Allocation>::serialize(value, bytes);
+
+    std::size_t offset = 0;
+    const double essential =
+        serialization::Serializer<double>::deserialize(bytes, offset);
+    const double non_essential =
+        serialization::Serializer<double>::deserialize(bytes, offset);
+    const double savings =
+        serialization::Serializer<double>::deserialize(bytes, offset);
+
+    assert(essential == value.essential);
+    assert(non_essential == value.non_essential);
+    assert(savings == value.savings);
+    assert(bytes.size() == 3 * sizeof(double));
+    assert(offset == 3 * sizeof(double));
+  }
   return 0;
 }
