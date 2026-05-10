@@ -32,6 +32,23 @@ struct Serializer<T> {
     return value;
   }
 };
+
+template <typename T>
+  requires std::is_enum_v<T>
+struct Serializer<T> {
+  using Underlying = std::underlying_type_t<T>;
+
+  static void serialize(const T &value, std::vector<std::byte> &output) {
+    Serializer<Underlying>::serialize(static_cast<Underlying>(value), output);
+  }
+
+  static auto deserialize(std::span<const std::byte> input,
+                          std::size_t &offset) -> T {
+    const Underlying raw = Serializer<Underlying>::deserialize(input, offset);
+    return static_cast<T>(raw);
+  }
+};
+
 } // namespace clunkydb::serialization
 
 #endif
