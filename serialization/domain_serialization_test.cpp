@@ -1,6 +1,7 @@
 #include <cassert>
 #include <cstddef>
 #include <span>
+#include <type_traits>
 #include <vector>
 
 #include "budget/types.h"
@@ -12,6 +13,7 @@ namespace budget = clunkydb::budget;
 namespace serialization = clunkydb::serialization;
 
 static_assert(serialization::Serializable<budget::Allocation>);
+static_assert(serialization::Serializable<budget::ExpenseType>);
 
 int main() {
   {
@@ -74,5 +76,38 @@ int main() {
     assert(decoded.savings == value.savings);
     assert(offset == allocation_start + 3 * sizeof(double));
   }
+
+  {
+    const budget::ExpenseType value = budget::ExpenseType::Essential;
+    std::vector<std::byte> bytes;
+
+    serialization::Serializer<budget::ExpenseType>::serialize(value, bytes);
+
+    std::size_t offset = 0;
+    const budget::ExpenseType decoded =
+        serialization::Serializer<budget::ExpenseType>::deserialize(bytes,
+                                                                    offset);
+
+    assert(decoded == value);
+    assert(offset == sizeof(std::underlying_type_t<budget::ExpenseType>));
+    assert(bytes.size() == sizeof(std::underlying_type_t<budget::ExpenseType>));
+  }
+
+  {
+    const budget::ExpenseType value = budget::ExpenseType::NonEssential;
+    std::vector<std::byte> bytes;
+
+    serialization::Serializer<budget::ExpenseType>::serialize(value, bytes);
+
+    std::size_t offset = 0;
+    const budget::ExpenseType decoded =
+        serialization::Serializer<budget::ExpenseType>::deserialize(bytes,
+                                                                    offset);
+
+    assert(decoded == value);
+    assert(offset == sizeof(std::underlying_type_t<budget::ExpenseType>));
+    assert(bytes.size() == sizeof(std::underlying_type_t<budget::ExpenseType>));
+  }
+
   return 0;
 }
