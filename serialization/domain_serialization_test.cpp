@@ -109,5 +109,23 @@ int main() {
     assert(bytes.size() == sizeof(std::underlying_type_t<budget::ExpenseType>));
   }
 
+  {
+    // Explicit layout test. Serializer is really storing the underlying integer
+    // representation, not something wonky
+    const budget::ExpenseType value = budget::ExpenseType::NonEssential;
+    std::vector<std::byte> bytes;
+
+    serialization::Serializer<budget::ExpenseType>::serialize(value, bytes);
+
+    std::size_t offset = 0;
+    const auto raw = serialization::Serializer<
+        std::underlying_type_t<budget::ExpenseType>>::deserialize(bytes,
+                                                                  offset);
+
+    assert(raw ==
+           static_cast<std::underlying_type_t<budget::ExpenseType>>(value));
+    assert(offset == bytes.size());
+  }
+
   return 0;
 }
