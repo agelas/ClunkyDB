@@ -53,5 +53,26 @@ int main() {
     assert(bytes.size() == 3 * sizeof(double));
     assert(offset == 3 * sizeof(double));
   }
+
+  {
+    // Deserialize respects a non-zero offset
+    const double prefix = 95.0;
+    const budget::Allocation value{0.5, 0.3, 0.2};
+    std::vector<std::byte> bytes;
+
+    serialization::Serializer<double>::serialize(prefix, bytes);
+    const std::size_t allocation_start = bytes.size();
+    serialization::Serializer<budget::Allocation>::serialize(value, bytes);
+
+    std::size_t offset = allocation_start;
+    const auto decoded =
+        serialization::Serializer<budget::Allocation>::deserialize(bytes,
+                                                                   offset);
+
+    assert(decoded.essential == value.essential);
+    assert(decoded.non_essential == value.non_essential);
+    assert(decoded.savings == value.savings);
+    assert(offset == allocation_start + 3 * sizeof(double));
+  }
   return 0;
 }
