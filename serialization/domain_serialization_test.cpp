@@ -153,5 +153,38 @@ int main() {
     assert(offset == bytes.size());
   }
 
+  {
+    const budget::ExpenseItem value{
+        .type = budget::ExpenseType::NonEssential,
+        .name = "Covfefe",
+        .cost = 19.99,
+        .category = "Entertainment",
+        .recurring = false,
+    };
+    std::vector<std::byte> bytes;
+
+    serialization::Serializer<budget::ExpenseItem>::serialize(value, bytes);
+
+    std::size_t offset = 0;
+    const auto type =
+        serialization::Serializer<budget::ExpenseType>::deserialize(bytes,
+                                                                    offset);
+    const auto name =
+        serialization::Serializer<std::string>::deserialize(bytes, offset);
+    const auto cost =
+        serialization::Serializer<double>::deserialize(bytes, offset);
+    const auto category =
+        serialization::Serializer<std::string>::deserialize(bytes, offset);
+    const auto recurring =
+        serialization::Serializer<bool>::deserialize(bytes, offset);
+
+    assert(type == value.type);
+    assert(name == value.name);
+    assert(cost == value.cost);
+    assert(category == value.category);
+    assert(recurring == value.recurring);
+    assert(offset == bytes.size());
+  }
+
   return 0;
 }
