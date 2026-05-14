@@ -186,5 +186,58 @@ int main() {
     assert(offset == bytes.size());
   }
 
+  {
+    const std::int64_t prefix = 12345;
+    const budget::ExpenseItem value{
+        .type = budget::ExpenseType::Essential,
+        .name = "Stuff",
+        .cost = 123.45,
+        .category = "Things",
+        .recurring = false,
+    };
+    std::vector<std::byte> bytes;
+
+    serialization::Serializer<std::int64_t>::serialize(prefix, bytes);
+    const std::size_t item_start = bytes.size();
+    serialization::Serializer<budget::ExpenseItem>::serialize(value, bytes);
+
+    std::size_t offset = item_start;
+    const auto decoded =
+        serialization::Serializer<budget::ExpenseItem>::deserialize(bytes,
+                                                                    offset);
+
+    assert(decoded.type == value.type);
+    assert(decoded.name == value.name);
+    assert(decoded.cost == value.cost);
+    assert(decoded.category == value.category);
+    assert(decoded.recurring == value.recurring);
+    assert(offset == bytes.size());
+  }
+
+  {
+    const budget::ExpenseItem value{
+        .type = budget::ExpenseType::Essential,
+        .name = "",
+        .cost = 0.000,
+        .category = "",
+        .recurring = false,
+    };
+    std::vector<std::byte> bytes;
+
+    serialization::Serializer<budget::ExpenseItem>::serialize(value, bytes);
+
+    std::size_t offset = 0;
+    const auto decoded =
+        serialization::Serializer<budget::ExpenseItem>::deserialize(bytes,
+                                                                    offset);
+
+    assert(decoded.type == value.type);
+    assert(decoded.name == value.name);
+    assert(decoded.cost == value.cost);
+    assert(decoded.category == value.category);
+    assert(decoded.recurring == value.recurring);
+    assert(offset == bytes.size());
+  }
+
   return 0;
 }
