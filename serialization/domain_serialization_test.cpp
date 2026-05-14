@@ -14,6 +14,7 @@ namespace serialization = clunkydb::serialization;
 
 static_assert(serialization::Serializable<budget::Allocation>);
 static_assert(serialization::Serializable<budget::ExpenseType>);
+static_assert(serialization::Serializable<budget::ExpenseItem>);
 
 int main() {
   {
@@ -124,6 +125,31 @@ int main() {
 
     assert(raw ==
            static_cast<std::underlying_type_t<budget::ExpenseType>>(value));
+    assert(offset == bytes.size());
+  }
+
+  {
+    const budget::ExpenseItem value{
+        .type = budget::ExpenseType::Essential,
+        .name = "Rent",
+        .cost = 1000.42,
+        .category = "Housing",
+        .recurring = true,
+    };
+    std::vector<std::byte> bytes;
+
+    serialization::Serializer<budget::ExpenseItem>::serialize(value, bytes);
+
+    std::size_t offset = 0;
+    const auto decoded =
+        serialization::Serializer<budget::ExpenseItem>::deserialize(bytes,
+                                                                    offset);
+
+    assert(decoded.type == value.type);
+    assert(decoded.name == value.name);
+    assert(decoded.cost == value.cost);
+    assert(decoded.category == value.category);
+    assert(decoded.recurring == value.recurring);
     assert(offset == bytes.size());
   }
 
