@@ -57,4 +57,26 @@ template <> struct Serializer<ExpenseItem> {
     return value;
   }
 };
+
+using budget::SavingsAccount;
+template <> struct Serializer<SavingsAccount> {
+  static void serialize(const SavingsAccount &value,
+                        std::vector<std::byte> &output) {
+    Serializer<std::string>::serialize(value.account_name, output);
+    Serializer<std::string>::serialize(value.type, output);
+    Serializer<double>::serialize(value.goal, output);
+    Serializer<double>::serialize(value.current_value, output);
+  }
+
+  static auto deserialize(std::span<const std::byte> input,
+                          std::size_t &offset) -> SavingsAccount {
+    SavingsAccount value{};
+    value.account_name = Serializer<std::string>::deserialize(input, offset);
+    value.type = Serializer<std::string>::deserialize(input, offset);
+    value.goal = Serializer<double>::deserialize(input, offset);
+    value.current_value = Serializer<double>::deserialize(input, offset);
+
+    return value;
+  }
+};
 } // namespace clunkydb::serialization
