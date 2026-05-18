@@ -15,6 +15,7 @@ namespace serialization = clunkydb::serialization;
 static_assert(serialization::Serializable<budget::Allocation>);
 static_assert(serialization::Serializable<budget::ExpenseType>);
 static_assert(serialization::Serializable<budget::ExpenseItem>);
+static_assert(serialization::Serializable<budget::SavingsAccount>);
 
 int main() {
   {
@@ -236,6 +237,28 @@ int main() {
     assert(decoded.cost == value.cost);
     assert(decoded.category == value.category);
     assert(decoded.recurring == value.recurring);
+    assert(offset == bytes.size());
+  }
+
+  {
+    const budget::SavingsAccount value{
+        .account_name = "Some Savings",
+        .type = "HYSA",
+        .goal = 1000.00,
+        .current_value = 420.00,
+    };
+    std::vector<std::byte> bytes;
+    serialization::Serializer<budget::SavingsAccount>::serialize(value, bytes);
+
+    std::size_t offset = 0;
+    const auto decoded =
+        serialization::Serializer<budget::SavingsAccount>::deserialize(bytes,
+                                                                       offset);
+
+    assert(decoded.account_name == value.account_name);
+    assert(decoded.type == value.type);
+    assert(decoded.goal == value.goal);
+    assert(decoded.current_value == value.current_value);
     assert(offset == bytes.size());
   }
 
