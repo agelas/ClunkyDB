@@ -262,5 +262,31 @@ int main() {
     assert(offset == bytes.size());
   }
 
+  {
+    const budget::SavingsAccount value{
+        .account_name = "Some Savings",
+        .type = "HYSA",
+        .goal = 1000.00,
+        .current_value = 420.00,
+    };
+    std::vector<std::byte> bytes;
+    serialization::Serializer<budget::SavingsAccount>::serialize(value, bytes);
+
+    std::size_t offset = 0;
+    const std::string account_name =
+        serialization::Serializer<std::string>::deserialize(bytes, offset);
+    const std::string type =
+        serialization::Serializer<std::string>::deserialize(bytes, offset);
+    const double goal =
+        serialization::Serializer<double>::deserialize(bytes, offset);
+    const double current_value =
+        serialization::Serializer<double>::deserialize(bytes, offset);
+
+    assert(account_name == value.account_name);
+    assert(type == value.type);
+    assert(goal == value.goal);
+    assert(current_value == value.current_value);
+    assert(offset == bytes.size());
+  }
   return 0;
 }
