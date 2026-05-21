@@ -288,6 +288,7 @@ int main() {
     assert(current_value == value.current_value);
     assert(offset == bytes.size());
   }
+
   {
     const double prefix = 44.0;
     const budget::SavingsAccount value{
@@ -302,6 +303,28 @@ int main() {
     serialization::Serializer<budget::SavingsAccount>::serialize(value, bytes);
 
     std::size_t offset = allocation_start;
+    const auto decoded =
+        serialization::Serializer<budget::SavingsAccount>::deserialize(bytes,
+                                                                       offset);
+
+    assert(decoded.account_name == value.account_name);
+    assert(decoded.type == value.type);
+    assert(decoded.goal == value.goal);
+    assert(decoded.current_value == value.current_value);
+    assert(offset == bytes.size());
+  }
+
+  {
+    const budget::SavingsAccount value{
+        .account_name = "",
+        .type = "",
+        .goal = 0,
+        .current_value = 0,
+    };
+    std::vector<std::byte> bytes;
+    serialization::Serializer<budget::SavingsAccount>::serialize(value, bytes);
+
+    std::size_t offset = 0;
     const auto decoded =
         serialization::Serializer<budget::SavingsAccount>::deserialize(bytes,
                                                                        offset);
