@@ -1,6 +1,7 @@
 #include <cassert>
 #include <cstddef>
 #include <span>
+#include <stdexcept>
 #include <type_traits>
 #include <vector>
 
@@ -334,6 +335,30 @@ int main() {
     assert(decoded.goal == value.goal);
     assert(decoded.current_value == value.current_value);
     assert(offset == bytes.size());
+  }
+
+  {
+    // Trunacted input failure
+    const budget::SavingsAccount value{
+        .account_name = "Bank Checking",
+        .type = "Checking",
+        .goal = 500,
+        .current_value = 222.25,
+    };
+    std::vector<std::byte> bytes;
+    serialization::Serializer<budget::SavingsAccount>::serialize(value, bytes);
+    bytes.pop_back();
+
+    std::size_t offset = 0;
+    bool threw = false;
+
+    try {
+      (void)serialization::Serializer<budget::SavingsAccount>::deserialize(
+          bytes, offset);
+    } catch (const std::runtime_error &) {
+      threw = true;
+    }
+    assert(threw);
   }
 
   return 0;
