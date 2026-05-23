@@ -79,4 +79,34 @@ template <> struct Serializer<SavingsAccount> {
     return value;
   }
 };
+
+using budget::PaycheckDoc;
+template <> struct Serializer<PaycheckDoc> {
+  static void serializer(const PaycheckDoc &value,
+                         std::vector<std::byte> &output) {
+    Serializer<std::int64_t>::serialize(value.paycheck_num, output);
+    Serializer<std::string>::serialize(value.date, output);
+    Serializer<double>::serialize(value.amount, output);
+    Serializer<Allocation>::serialize(value.allocations, output);
+    Serializer<std::vector<ExpenseItem>>::serialize(value.expense_items,
+                                                    output);
+    Serializer<std::vector<SavingsAccount>>::serialize(value.savings_accounts,
+                                                       output);
+  }
+
+  static auto deserialize(std::span<const std::byte> input,
+                          std::size_t &offset) -> PaycheckDoc {
+    PaycheckDoc value{};
+    value.paycheck_num = Serializer<std::int64_t>::deserialize(input, offset);
+    value.date = Serializer<std::string>::deserialize(input, offset);
+    value.amount = Serializer<double>::deserialize(input, offset);
+    value.allocations = Serializer<Allocation>::deserialize(input, offset);
+    value.expense_items =
+        Serializer<std::vector<ExpenseItem>>::deserialize(input, offset);
+    value.savings_accounts =
+        Serializer<std::vector<SavingsAccount>>::deserialize(input, offset);
+
+    return value;
+  }
+};
 } // namespace clunkydb::serialization
