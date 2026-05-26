@@ -17,6 +17,7 @@ static_assert(serialization::Serializable<budget::Allocation>);
 static_assert(serialization::Serializable<budget::ExpenseType>);
 static_assert(serialization::Serializable<budget::ExpenseItem>);
 static_assert(serialization::Serializable<budget::SavingsAccount>);
+static_assert(serialization::Serializable<budget::PaycheckDoc>);
 
 int main() {
   {
