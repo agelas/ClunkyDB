@@ -19,6 +19,91 @@ static_assert(serialization::Serializable<budget::ExpenseItem>);
 static_assert(serialization::Serializable<budget::SavingsAccount>);
 static_assert(serialization::Serializable<budget::PaycheckDoc>);
 
+void testPaycheckDoc() {
+  {
+    const budget::PaycheckDoc value{
+        .paycheck_num = 1,
+        .date = "2026-05-22",
+        .allocations = budget::Allocation{0.5, 0.3, 0.2},
+        .expense_items = {budget::ExpenseItem{
+                              .type = budget::ExpenseType::Essential,
+                              .name = "Rent",
+                              .cost = 2000,
+                              .category = "Housing",
+                              .recurring = true,
+                          },
+                          budget::ExpenseItem{
+                              .type = budget::ExpenseType::NonEssential,
+                              .name = "Thing",
+                              .cost = 200,
+                              .category = "Misc",
+                              .recurring = false,
+                          }},
+        .savings_accounts = {budget::SavingsAccount{
+                                 .account_name = "Some Savings",
+                                 .type = "HYSA",
+                                 .goal = 1000.00,
+                                 .current_value = 600.05,
+                             },
+                             budget::SavingsAccount{
+                                 .account_name = "Brokerage",
+                                 .type = "Investment",
+                                 .goal = 5000.00,
+                                 .current_value = 2000.23,
+                             }}};
+
+    std::vector<std::byte> bytes;
+    serialization::Serializer<budget::PaycheckDoc>::serialize(value, bytes);
+
+    std::size_t offset = 0;
+    const auto decoded =
+        serialization::Serializer<budget::PaycheckDoc>::deserialize(bytes,
+                                                                    offset);
+
+    assert(decoded.paycheck_num == value.paycheck_num);
+    assert(decoded.date == value.date);
+    assert(decoded.amount == value.amount);
+    assert(decoded.allocations.essential == value.allocations.essential);
+    assert(decoded.allocations.non_essential ==
+           value.allocations.non_essential);
+    assert(decoded.allocations.savings == value.allocations.savings);
+    assert(decoded.expense_items.size() == value.expense_items.size());
+    assert(decoded.savings_accounts.size() == value.savings_accounts.size());
+
+    assert(decoded.expense_items[0].type == value.expense_items[0].type);
+    assert(decoded.expense_items[0].name == value.expense_items[0].name);
+    assert(decoded.expense_items[0].cost == value.expense_items[0].cost);
+    assert(decoded.expense_items[0].category ==
+           value.expense_items[0].category);
+    assert(decoded.expense_items[0].recurring ==
+           value.expense_items[0].recurring);
+
+    assert(decoded.expense_items[1].type == value.expense_items[1].type);
+    assert(decoded.expense_items[1].name == value.expense_items[1].name);
+    assert(decoded.expense_items[1].cost == value.expense_items[1].cost);
+    assert(decoded.expense_items[1].category ==
+           value.expense_items[1].category);
+    assert(decoded.expense_items[1].recurring ==
+           value.expense_items[1].recurring);
+
+    assert(decoded.savings_accounts[0].account_name ==
+           value.savings_accounts[0].account_name);
+    assert(decoded.savings_accounts[0].type == value.savings_accounts[0].type);
+    assert(decoded.savings_accounts[0].goal == value.savings_accounts[0].goal);
+    assert(decoded.savings_accounts[0].current_value ==
+           value.savings_accounts[0].current_value);
+
+    assert(decoded.savings_accounts[1].account_name ==
+           value.savings_accounts[1].account_name);
+    assert(decoded.savings_accounts[1].type == value.savings_accounts[1].type);
+    assert(decoded.savings_accounts[1].goal == value.savings_accounts[1].goal);
+    assert(decoded.savings_accounts[1].current_value ==
+           value.savings_accounts[1].current_value);
+
+    assert(offset == bytes.size());
+  }
+}
+
 int main() {
   {
     const budget::Allocation value{0.5, 0.3, 0.2};
@@ -361,6 +446,8 @@ int main() {
     }
     assert(threw);
   }
+
+  testPaycheckDoc();
 
   return 0;
 }
