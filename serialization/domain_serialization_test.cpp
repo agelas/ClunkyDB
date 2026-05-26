@@ -26,6 +26,15 @@ void assert_equal(const budget::Allocation &lhs,
   assert(lhs.savings == rhs.savings);
 }
 
+void assert_equal(const budget::ExpenseItem &lhs,
+                  const budget::ExpenseItem &rhs) {
+  assert(lhs.type == rhs.type);
+  assert(lhs.name == rhs.name);
+  assert(lhs.cost == rhs.cost);
+  assert(lhs.category == rhs.category);
+  assert(lhs.recurring == rhs.recurring);
+}
+
 void testPaycheckDoc() {
   {
     const budget::PaycheckDoc value{
@@ -74,21 +83,8 @@ void testPaycheckDoc() {
     assert(decoded.expense_items.size() == value.expense_items.size());
     assert(decoded.savings_accounts.size() == value.savings_accounts.size());
 
-    assert(decoded.expense_items[0].type == value.expense_items[0].type);
-    assert(decoded.expense_items[0].name == value.expense_items[0].name);
-    assert(decoded.expense_items[0].cost == value.expense_items[0].cost);
-    assert(decoded.expense_items[0].category ==
-           value.expense_items[0].category);
-    assert(decoded.expense_items[0].recurring ==
-           value.expense_items[0].recurring);
-
-    assert(decoded.expense_items[1].type == value.expense_items[1].type);
-    assert(decoded.expense_items[1].name == value.expense_items[1].name);
-    assert(decoded.expense_items[1].cost == value.expense_items[1].cost);
-    assert(decoded.expense_items[1].category ==
-           value.expense_items[1].category);
-    assert(decoded.expense_items[1].recurring ==
-           value.expense_items[1].recurring);
+    assert_equal(decoded.expense_items[0], value.expense_items[0]);
+    assert_equal(decoded.expense_items[1], value.expense_items[1]);
 
     assert(decoded.savings_accounts[0].account_name ==
            value.savings_accounts[0].account_name);
@@ -232,12 +228,7 @@ int main() {
     const auto decoded =
         serialization::Serializer<budget::ExpenseItem>::deserialize(bytes,
                                                                     offset);
-
-    assert(decoded.type == value.type);
-    assert(decoded.name == value.name);
-    assert(decoded.cost == value.cost);
-    assert(decoded.category == value.category);
-    assert(decoded.recurring == value.recurring);
+    assert_equal(decoded, value);
     assert(offset == bytes.size());
   }
 
@@ -293,12 +284,7 @@ int main() {
     const auto decoded =
         serialization::Serializer<budget::ExpenseItem>::deserialize(bytes,
                                                                     offset);
-
-    assert(decoded.type == value.type);
-    assert(decoded.name == value.name);
-    assert(decoded.cost == value.cost);
-    assert(decoded.category == value.category);
-    assert(decoded.recurring == value.recurring);
+    assert_equal(decoded, value);
     assert(offset == bytes.size());
   }
 
@@ -318,12 +304,7 @@ int main() {
     const auto decoded =
         serialization::Serializer<budget::ExpenseItem>::deserialize(bytes,
                                                                     offset);
-
-    assert(decoded.type == value.type);
-    assert(decoded.name == value.name);
-    assert(decoded.cost == value.cost);
-    assert(decoded.category == value.category);
-    assert(decoded.recurring == value.recurring);
+    assert_equal(decoded, value);
     assert(offset == bytes.size());
   }
 
