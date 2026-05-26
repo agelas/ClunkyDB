@@ -80,8 +80,8 @@ template <> struct Serializer<SavingsAccount> {
 
 using budget::PaycheckDoc;
 template <> struct Serializer<PaycheckDoc> {
-  static void serializer(const PaycheckDoc &value,
-                         std::vector<std::byte> &output) {
+  static void serialize(const PaycheckDoc &value,
+                        std::vector<std::byte> &output) {
     Serializer<std::int64_t>::serialize(value.paycheck_num, output);
     Serializer<std::string>::serialize(value.date, output);
     Serializer<double>::serialize(value.amount, output);
