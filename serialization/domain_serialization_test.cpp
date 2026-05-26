@@ -35,6 +35,14 @@ void assert_equal(const budget::ExpenseItem &lhs,
   assert(lhs.recurring == rhs.recurring);
 }
 
+void assert_equal(const budget::SavingsAccount &lhs,
+                  const budget::SavingsAccount &rhs) {
+  assert(lhs.account_name == rhs.account_name);
+  assert(lhs.type == rhs.type);
+  assert(lhs.goal == rhs.goal);
+  assert(lhs.current_value == rhs.current_value);
+}
+
 void testPaycheckDoc() {
   {
     const budget::PaycheckDoc value{
@@ -80,25 +88,15 @@ void testPaycheckDoc() {
     assert(decoded.date == value.date);
     assert(decoded.amount == value.amount);
     assert_equal(decoded.allocations, value.allocations);
+
     assert(decoded.expense_items.size() == value.expense_items.size());
     assert(decoded.savings_accounts.size() == value.savings_accounts.size());
 
     assert_equal(decoded.expense_items[0], value.expense_items[0]);
     assert_equal(decoded.expense_items[1], value.expense_items[1]);
 
-    assert(decoded.savings_accounts[0].account_name ==
-           value.savings_accounts[0].account_name);
-    assert(decoded.savings_accounts[0].type == value.savings_accounts[0].type);
-    assert(decoded.savings_accounts[0].goal == value.savings_accounts[0].goal);
-    assert(decoded.savings_accounts[0].current_value ==
-           value.savings_accounts[0].current_value);
-
-    assert(decoded.savings_accounts[1].account_name ==
-           value.savings_accounts[1].account_name);
-    assert(decoded.savings_accounts[1].type == value.savings_accounts[1].type);
-    assert(decoded.savings_accounts[1].goal == value.savings_accounts[1].goal);
-    assert(decoded.savings_accounts[1].current_value ==
-           value.savings_accounts[1].current_value);
+    assert_equal(decoded.savings_accounts[0], value.savings_accounts[0]);
+    assert_equal(decoded.savings_accounts[1], value.savings_accounts[1]);
 
     assert(offset == bytes.size());
   }
@@ -322,11 +320,7 @@ int main() {
     const auto decoded =
         serialization::Serializer<budget::SavingsAccount>::deserialize(bytes,
                                                                        offset);
-
-    assert(decoded.account_name == value.account_name);
-    assert(decoded.type == value.type);
-    assert(decoded.goal == value.goal);
-    assert(decoded.current_value == value.current_value);
+    assert_equal(decoded, value);
     assert(offset == bytes.size());
   }
 
@@ -374,11 +368,7 @@ int main() {
     const auto decoded =
         serialization::Serializer<budget::SavingsAccount>::deserialize(bytes,
                                                                        offset);
-
-    assert(decoded.account_name == value.account_name);
-    assert(decoded.type == value.type);
-    assert(decoded.goal == value.goal);
-    assert(decoded.current_value == value.current_value);
+    assert_equal(decoded, value);
     assert(offset == bytes.size());
   }
 
@@ -396,11 +386,7 @@ int main() {
     const auto decoded =
         serialization::Serializer<budget::SavingsAccount>::deserialize(bytes,
                                                                        offset);
-
-    assert(decoded.account_name == value.account_name);
-    assert(decoded.type == value.type);
-    assert(decoded.goal == value.goal);
-    assert(decoded.current_value == value.current_value);
+    assert_equal(decoded, value);
     assert(offset == bytes.size());
   }
 
