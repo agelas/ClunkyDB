@@ -19,6 +19,13 @@ static_assert(serialization::Serializable<budget::ExpenseItem>);
 static_assert(serialization::Serializable<budget::SavingsAccount>);
 static_assert(serialization::Serializable<budget::PaycheckDoc>);
 
+void assert_equal(const budget::Allocation &lhs,
+                  const budget::Allocation &rhs) {
+  assert(lhs.essential == rhs.essential);
+  assert(lhs.non_essential == rhs.non_essential);
+  assert(lhs.savings == rhs.savings);
+}
+
 void testPaycheckDoc() {
   {
     const budget::PaycheckDoc value{
@@ -63,10 +70,7 @@ void testPaycheckDoc() {
     assert(decoded.paycheck_num == value.paycheck_num);
     assert(decoded.date == value.date);
     assert(decoded.amount == value.amount);
-    assert(decoded.allocations.essential == value.allocations.essential);
-    assert(decoded.allocations.non_essential ==
-           value.allocations.non_essential);
-    assert(decoded.allocations.savings == value.allocations.savings);
+    assert_equal(decoded.allocations, value.allocations);
     assert(decoded.expense_items.size() == value.expense_items.size());
     assert(decoded.savings_accounts.size() == value.savings_accounts.size());
 
@@ -116,9 +120,7 @@ int main() {
         serialization::Serializer<budget::Allocation>::deserialize(bytes,
                                                                    offset);
 
-    assert(decoded.essential == value.essential);
-    assert(decoded.non_essential == value.non_essential);
-    assert(decoded.savings == value.savings);
+    assert_equal(decoded, value);
     assert(bytes.size() == 3 * sizeof(double));
     assert(offset == 3 * sizeof(double));
   }
@@ -160,9 +162,7 @@ int main() {
         serialization::Serializer<budget::Allocation>::deserialize(bytes,
                                                                    offset);
 
-    assert(decoded.essential == value.essential);
-    assert(decoded.non_essential == value.non_essential);
-    assert(decoded.savings == value.savings);
+    assert_equal(decoded, value);
     assert(offset == allocation_start + 3 * sizeof(double));
   }
 
