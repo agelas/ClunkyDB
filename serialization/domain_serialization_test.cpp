@@ -43,6 +43,32 @@ void assert_equal(const budget::SavingsAccount &lhs,
   assert(lhs.current_value == rhs.current_value);
 }
 
+void assert_equal(const std::vector<budget::ExpenseItem> &lhs,
+                  const std::vector<budget::ExpenseItem> &rhs) {
+  assert(lhs.size() == rhs.size());
+  for (std::size_t i = 0; i < lhs.size(); ++i) {
+    assert_equal(lhs[i], rhs[i]);
+  }
+}
+
+void assert_equal(const std::vector<budget::SavingsAccount> &lhs,
+                  const std::vector<budget::SavingsAccount> &rhs) {
+  assert(lhs.size() == rhs.size());
+  for (std::size_t i = 0; i < lhs.size(); ++i) {
+    assert_equal(lhs[i], rhs[i]);
+  }
+}
+
+void assert_equal(const budget::PaycheckDoc &lhs,
+                  const budget::PaycheckDoc &rhs) {
+  assert(lhs.paycheck_num == rhs.paycheck_num);
+  assert(lhs.date == rhs.date);
+  assert(lhs.amount == rhs.amount);
+  assert_equal(lhs.allocations, rhs.allocations);
+  assert_equal(lhs.expense_items, rhs.expense_items);
+  assert_equal(lhs.savings_accounts, rhs.savings_accounts);
+}
+
 void testPaycheckDoc() {
   {
     const budget::PaycheckDoc value{
