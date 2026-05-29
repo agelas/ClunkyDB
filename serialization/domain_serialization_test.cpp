@@ -110,20 +110,7 @@ void testPaycheckDoc() {
         serialization::Serializer<budget::PaycheckDoc>::deserialize(bytes,
                                                                     offset);
 
-    assert(decoded.paycheck_num == value.paycheck_num);
-    assert(decoded.date == value.date);
-    assert(decoded.amount == value.amount);
-    assert_equal(decoded.allocations, value.allocations);
-
-    assert(decoded.expense_items.size() == value.expense_items.size());
-    assert(decoded.savings_accounts.size() == value.savings_accounts.size());
-
-    assert_equal(decoded.expense_items[0], value.expense_items[0]);
-    assert_equal(decoded.expense_items[1], value.expense_items[1]);
-
-    assert_equal(decoded.savings_accounts[0], value.savings_accounts[0]);
-    assert_equal(decoded.savings_accounts[1], value.savings_accounts[1]);
-
+    assert_equal(decoded, value);
     assert(offset == bytes.size());
   }
 }
