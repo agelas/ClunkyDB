@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "budget/types.h"
+#include "serialization/containers.h"
 #include "serialization/domain.h"
 #include "serialization/primitives.h"
 #include "serialization/serializer.h"
@@ -129,6 +130,39 @@ void testEmptyPaycheckDoc() {
   serialization::Serializer<budget::PaycheckDoc>::serialize(value, bytes);
 
   std::size_t offset = 0;
+  const auto decoded =
+      serialization::Serializer<budget::PaycheckDoc>::deserialize(bytes,
+                                                                  offset);
+
+  assert_equal(decoded, value);
+  assert(offset == bytes.size());
+}
+
+void testNonZeroOffsetPaycheckDoc() {
+  const std::int64_t prefix = 12345;
+  const budget::PaycheckDoc value{
+      .paycheck_num = 3,
+      .date = "2026-01-02",
+      .amount = 1000.00,
+      .allocations = budget::Allocation{0.6, 0.2, 0.2},
+      .expense_items = {},
+      .savings_accounts =
+          {
+              budget::SavingsAccount{
+                  .account_name = "Checking 1",
+                  .type = "Checking",
+                  .goal = 10000.00,
+                  .current_value = 900,
+              },
+          },
+  };
+
+  std::vector<std::byte> bytes;
+  serialization::Serializer<std::int64_t>::serialize(prefix, bytes);
+  const std::size_t doc_start = bytes.size();
+  serialization::Serializer<budget::PaycheckDoc>::serialize(value, bytes);
+
+  std::size_t offset = doc_start;
   const auto decoded =
       serialization::Serializer<budget::PaycheckDoc>::deserialize(bytes,
                                                                   offset);
