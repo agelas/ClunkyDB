@@ -115,6 +115,28 @@ void testPaycheckDoc() {
   }
 }
 
+void testEmptyPaycheckDoc() {
+  const budget::PaycheckDoc value{
+      .paycheck_num = 2,
+      .date = "2026-01-01",
+      .amount = 0,
+      .allocations = budget::Allocation{0, 0, 1},
+      .expense_items = {},
+      .savings_accounts = {},
+  };
+
+  std::vector<std::byte> bytes;
+  serialization::Serializer<budget::PaycheckDoc>::serialize(value, bytes);
+
+  std::size_t offset = 0;
+  const auto decoded =
+      serialization::Serializer<budget::PaycheckDoc>::deserialize(bytes,
+                                                                  offset);
+
+  assert_equal(decoded, value);
+  assert(offset == bytes.size());
+}
+
 int main() {
   {
     const budget::Allocation value{0.5, 0.3, 0.2};
@@ -428,6 +450,7 @@ int main() {
   }
 
   testPaycheckDoc();
+  testEmptyPaycheckDoc();
 
   return 0;
 }
