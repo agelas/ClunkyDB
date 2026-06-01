@@ -485,6 +485,7 @@ int main() {
 
   testPaycheckDoc();
   testEmptyPaycheckDoc();
+  testNonZeroOffsetPaycheckDoc();
 
   return 0;
 }
