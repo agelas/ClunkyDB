@@ -36,6 +36,23 @@ cc_library(
     ],
 )
 
+cc_library(
+    name = "storage",
+    hdrs = [
+        "storage/collection.h",
+    ],
+    deps = [
+        ":schema",
+        ":serialization",
+    ],
+    copts = [
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+    ],
+)
+
 cc_test(
     name = "schema_test",
     srcs = ["schema/schema_test.cpp"],
@@ -69,6 +86,22 @@ cc_test(
     deps = [
         ":schema",
         ":serialization",
+    ],
+    copts = [
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+    ],
+)
+
+cc_test(
+    name = "storage_test",
+    srcs = ["storage/collection_test.cpp"],
+    deps = [
+        ":schema",
+        ":serialization",
+        ":storage",
     ],
     copts = [
         "-std=c++20",
