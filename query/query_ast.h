@@ -31,4 +31,17 @@ constexpr auto operator&&(Lhs lhs, Rhs rhs) -> logical_and<Lhs, Rhs> {
       .rhs = rhs,
   };
 }
+
+template <typename Lhs, typename Rhs> struct logical_or {
+  Lhs lhs;
+  Rhs rhs;
+};
+
+template <typename Lhs, typename Rhs>
+constexpr auto operator||(Lhs lhs, Rhs rhs) -> logical_or<Lhs, Rhs> {
+  return logical_or<Lhs, Rhs>{
+      .lhs = lhs,
+      .rhs = rhs,
+  };
+}
 } // namespace clunkydb::query
