@@ -18,4 +18,17 @@ constexpr auto operator==(field_ref<Name> field,
       .value = value,
   };
 }
+
+template <typename Lhs, typename Rhs> struct logical_and {
+  Lhs lhs;
+  Rhs rhs;
+};
+
+template <typename Lhs, typename Rhs>
+constexpr auto operator&&(Lhs lhs, Rhs rhs) -> logical_and<Lhs, Rhs> {
+  return logical_and<Lhs, Rhs>{
+      .lhs = lhs,
+      .rhs = rhs,
+  };
+}
 } // namespace clunkydb::query
