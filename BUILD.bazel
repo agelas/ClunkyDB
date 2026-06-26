@@ -57,6 +57,7 @@ cc_library(
     name = "query",
     hdrs = [
         "query/field_ref.h",
+        "query/query_ast.h",
     ],
     deps = [
         ":schema",
