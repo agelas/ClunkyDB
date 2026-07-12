@@ -1,8 +1,9 @@
 #pragma once
 
 #include "budget/types.h"
-#include "schema/fixed_string.h";
+#include "schema/fixed_string.h"
 #include <cstdint>
+#include <string>
 
 namespace clunkydb::query {
 template <typename Doc, schema::fixed_string Name> struct FieldAccessor;
@@ -10,6 +11,12 @@ template <typename Doc, schema::fixed_string Name> struct FieldAccessor;
 template <> struct FieldAccessor<budget::PaycheckDoc, "PaycheckNum"> {
   static auto get(const budget::PaycheckDoc &doc) -> const std::int64_t & {
     return doc.paycheck_num;
+  }
+};
+
+template <> struct FieldAccessor<budget::PaycheckDoc, "Date"> {
+  static auto get(const budget::PaycheckDoc &doc) -> const std::string & {
+    return doc.date;
   }
 };
 } // namespace clunkydb::query
