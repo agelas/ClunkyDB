@@ -19,4 +19,11 @@ template <> struct FieldAccessor<budget::PaycheckDoc, "Date"> {
     return doc.date;
   }
 };
+
+template <> struct FieldAccessor<budget::PaycheckDoc, "Allocations"> {
+  static auto
+  get(const budget::PaycheckDoc &doc) -> const budget::Allocation & {
+    return doc.allocations;
+  }
+};
 } // namespace clunkydb::query
