@@ -7,9 +7,16 @@
 
 namespace clunkydb::query {
 
-template <schema::fixed_string<Name>, typename Value, typename Doc>
+template <schema::fixed_string Name, typename Value, typename Doc>
 constexpr auto eval(const eq<field_ref<Name>, Value> &query,
                     const Doc &doc) -> bool {
   return eval(query.lhs, doc) && eval(query.rhs, doc);
 }
+
+template <typename Lhs, typename Rhs, typename Doc>
+constexpr auto eval(const logical_and<Lhs, Rhs> &query,
+                    const Doc &doc) -> bool {
+  return eval(query.lhs, doc) && eval(query.rhs, doc);
+}
+
 } // namespace clunkydb::query
