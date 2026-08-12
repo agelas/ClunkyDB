@@ -10,7 +10,7 @@ namespace clunkydb::query {
 template <schema::fixed_string Name, typename Value, typename Doc>
 constexpr auto eval(const eq<field_ref<Name>, Value> &query,
                     const Doc &doc) -> bool {
-  return eval(query.lhs, doc) && eval(query.rhs, doc);
+  return FieldAccessor<Doc, Name>::get(doc) == query.value;
 }
 
 template <typename Lhs, typename Rhs, typename Doc>
