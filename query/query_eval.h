@@ -19,4 +19,8 @@ constexpr auto eval(const logical_and<Lhs, Rhs> &query,
   return eval(query.lhs, doc) && eval(query.rhs, doc);
 }
 
+template <typename Lhs, typename Rhs, typename Doc>
+constexpr auto eval(const logical_or<Lhs, Rhs> &query, const Doc &doc) -> bool {
+  return eval(query.lhs, doc) || eval(query.rhs, doc);
+}
 } // namespace clunkydb::query
