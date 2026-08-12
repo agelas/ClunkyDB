@@ -59,6 +59,7 @@ cc_library(
         "query/field_accessor.h",
         "query/field_ref.h",
         "query/query_ast.h",
+        "query/query_eval.h",
     ],
     deps = [
         ":schema",
@@ -148,6 +149,21 @@ cc_test(
 cc_test(
     name = "query_field_accessor_test",
     srcs = ["query/query_field_accessor_test.cpp"],
+    deps = [
+        ":schema",
+        ":query",
+    ],
+    copts = [
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+    ],
+)
+
+cc_test(
+    name = "query_eval_test",
+    srcs = ["query/query_eval_test.cpp"],
     deps = [
         ":schema",
         ":query",
