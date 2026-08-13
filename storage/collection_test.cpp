@@ -11,6 +11,7 @@
 
 #include "budget/paycheck_schema.h"
 #include "budget/types.h"
+#include "query/query_eval.h"
 #include "serialization/domain.h"
 #include "serialization/primitives.h"
 #include "storage/collection.h"
@@ -18,6 +19,7 @@
 namespace budget = clunkydb::budget;
 namespace serialization = clunkydb::serialization;
 namespace storage = clunkydb::storage;
+namespace query = clunkydb::query;
 
 namespace {
 
@@ -71,11 +73,12 @@ auto sample_paycheck_one() -> budget::PaycheckDoc {
       .paycheck_num = 101,
       .date = "2026-05-15",
       .amount = 3250.75,
-      .allocations = budget::Allocation{
-          .essential = 0.55,
-          .non_essential = 0.20,
-          .savings = 0.25,
-      },
+      .allocations =
+          budget::Allocation{
+              .essential = 0.55,
+              .non_essential = 0.20,
+              .savings = 0.25,
+          },
       .expense_items =
           {
               budget::ExpenseItem{
@@ -110,11 +113,12 @@ auto sample_paycheck_two() -> budget::PaycheckDoc {
       .paycheck_num = 102,
       .date = "2026-05-29",
       .amount = 3291.10,
-      .allocations = budget::Allocation{
-          .essential = 0.50,
-          .non_essential = 0.25,
-          .savings = 0.25,
-      },
+      .allocations =
+          budget::Allocation{
+              .essential = 0.50,
+              .non_essential = 0.25,
+              .savings = 0.25,
+          },
       .expense_items =
           {
               budget::ExpenseItem{
@@ -196,8 +200,8 @@ void test_rejects_invalid_magic_header() {
 
   {
     std::ofstream output{path, std::ios::binary};
-    const std::array<std::byte, 4> bad_magic{
-        std::byte{0x42}, std::byte{0x41}, std::byte{0x44}, std::byte{0x21}};
+    const std::array<std::byte, 4> bad_magic{std::byte{0x42}, std::byte{0x41},
+                                             std::byte{0x44}, std::byte{0x21}};
     write_bytes(output, bad_magic);
   }
 
@@ -218,8 +222,8 @@ void test_rejects_truncated_record() {
 
   {
     std::ofstream output{path, std::ios::binary};
-    const std::array<std::byte, 4> magic{
-        std::byte{0x43}, std::byte{0x44}, std::byte{0x42}, std::byte{0x31}};
+    const std::array<std::byte, 4> magic{std::byte{0x43}, std::byte{0x44},
+                                         std::byte{0x42}, std::byte{0x31}};
     write_bytes(output, magic);
 
     std::vector<std::byte> length;
@@ -238,12 +242,32 @@ void test_rejects_truncated_record() {
   std::filesystem::remove(path);
 }
 
+void test_basic_query() {
+  const auto path = test_file_path("clunkydb_collection_roundtrip_test.cdb");
+  std::filesystem::remove(path);
+
+  const auto first = sample_paycheck_one();
+  const auto second = sample_paycheck_two();
+
+  {
+    PaycheckCollection collection{path};
+
+    collection.insert(first);
+    collection.insert(second);
+
+    const auto returned_paycheck =
+        collection.find_all(query::field<"PaycheckNum"> == 102);
+
+    assert(returned_paycheck[0].paycheck_num == 102);
+  }
+}
 } // namespace
 
 int main() {
   test_insert_and_load_all();
   test_rejects_invalid_magic_header();
   test_rejects_truncated_record();
+  test_basic_query();
 
   return 0;
 }
