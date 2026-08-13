@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "query/query_eval.h"
 #include "schema/document.h"
 #include "serialization/primitives.h"
 #include "serialization/serializer.h"
@@ -25,8 +26,8 @@ namespace detail {
 inline constexpr std::array<std::byte, 4> kFileMagic{
     std::byte{0x43}, std::byte{0x44}, std::byte{0x42}, std::byte{0x31}};
 
-inline auto read_all_bytes(const std::filesystem::path &path)
-    -> std::vector<std::byte> {
+inline auto
+read_all_bytes(const std::filesystem::path &path) -> std::vector<std::byte> {
   std::ifstream input{path, std::ios::binary};
   if (!input) {
     throw std::runtime_error("failed to open collection file for reading: " +
@@ -106,6 +107,18 @@ public:
 
   [[nodiscard]] auto load_all() const -> std::vector<T> { return records_; }
 
+  template <typename Query>
+  [[nodiscard]] auto find_all(const Query &query) const -> std::vector<T> {
+    std::vector<T> matches;
+    for (const auto &record : records_) {
+      if (query::eval(query, record)) {
+        matches.push_back(record);
+      }
+    }
+
+    return matches;
+  }
+
 private:
   void ensure_file_exists() const {
     if (std::filesystem::exists(file_path_)) {
@@ -134,8 +147,9 @@ private:
           serialization::Serializer<std::uint64_t>::deserialize(bytes, offset);
 
       if (payload_size > bytes.size() - offset) {
-        throw std::runtime_error("collection file contains a truncated record: " +
-                                 file_path_.string());
+        throw std::runtime_error(
+            "collection file contains a truncated record: " +
+            file_path_.string());
       }
 
       const auto payload_size_as_size_t =
@@ -143,8 +157,8 @@ private:
       const std::span<const std::byte> payload{bytes.data() + offset,
                                                payload_size_as_size_t};
       std::size_t payload_offset = 0;
-      auto record = serialization::Serializer<T>::deserialize(payload,
-                                                              payload_offset);
+      auto record =
+          serialization::Serializer<T>::deserialize(payload, payload_offset);
 
       if (payload_offset != payload.size()) {
         throw std::runtime_error(
