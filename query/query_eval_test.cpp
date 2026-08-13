@@ -1,5 +1,4 @@
 #include <cassert>
-#include <concepts>
 
 #include "query/field_ref.h"
 #include "query/query_ast.h"
@@ -20,11 +19,15 @@ const budget::PaycheckDoc doc{
 
 const auto paycheck_22 = query::field<"PaycheckNum"> == 22;
 const auto june_date = query::field<"Date"> == "2026-07-13";
+const auto july_date = query::field<"Date"> == "2026-08-13";
 
 int main() {
 
   assert(query::eval(paycheck_22, doc));
   assert(query::eval(paycheck_22 && june_date, doc));
+  assert(query::eval(june_date || july_date, doc));
+  assert(!query::eval(july_date, doc));
+  assert(query::eval((july_date || june_date) && paycheck_22, doc));
 
   return 0;
 }
