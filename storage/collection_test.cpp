@@ -261,6 +261,27 @@ void test_basic_query() {
     assert(returned_paycheck[0].paycheck_num == 102);
   }
 }
+
+void test_basic_or_query() {
+  const auto path = test_file_path("clunkydb_collection_roundtrip_test.cdb");
+  std::filesystem::remove(path);
+
+  const auto first = sample_paycheck_one();
+  const auto second = sample_paycheck_two();
+
+  {
+    PaycheckCollection collection{path};
+
+    collection.insert(first);
+    collection.insert(second);
+
+    const auto returned_paychecks =
+        collection.find_all((query::field<"PaycheckNum"> == 101) ||
+                            (query::field<"Date"> == "2026-05-29"));
+
+    assert(returned_paychecks.size() == 2);
+  }
+}
 } // namespace
 
 int main() {
@@ -268,6 +289,7 @@ int main() {
   test_rejects_invalid_magic_header();
   test_rejects_truncated_record();
   test_basic_query();
+  test_basic_or_query();
 
   return 0;
 }
