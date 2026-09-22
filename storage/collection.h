@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "query/query_eval.h"
+#include "query/query_validation.h"
 #include "schema/document.h"
 #include "serialization/primitives.h"
 #include "serialization/serializer.h"
@@ -108,6 +109,7 @@ public:
   [[nodiscard]] auto load_all() const -> std::vector<T> { return records_; }
 
   template <typename Query>
+    requires query::ValidQuery<Schema, Query>
   [[nodiscard]] auto find_all(const Query &query) const -> std::vector<T> {
     std::vector<T> matches;
     for (const auto &record : records_) {
